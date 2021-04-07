@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Row, Col, Form, Card, Button } from 'react-bootstrap';
 
 export function LoginView(props) {
     const [ username, setUsername ] = useState('');
@@ -14,25 +15,43 @@ export function LoginView(props) {
     };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form>
-                <label>Username:</label>
-                <input
-                    type='text'
-                    value={username}
-                    onChange={event => setUsername(event.target.value)}
-                />
+        <Card className='border-primary'>
+            <Card.Body>
+                <Form>
+                    <Form.Group>
+                        <h2>Login</h2>
+                    </Form.Group>
 
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={event => setPassword(event.target.value)}
-                />
-                <button type="submit" onClick={handleSubmit}>Submit</button>
-            </form>
-        </div>
+                    <Form.Group>
+                        <Form.Label>Username:</Form.Label>
+                        <Form.Control
+                            type='text'
+                            value={username}
+                            onChange={event => setUsername(event.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group>
+                        <Form.Label>Password:</Form.Label>
+                        <Form.Control
+                            type="password"
+                            value={password}
+                            onChange={event => setPassword(event.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group>
+                        <Button
+                            type='submit'
+                            onClick={handleSubmit}
+                            block
+                            size='lg'
+                        >Submit</Button>
+                    </Form.Group>
+                </Form>
+
+            </Card.Body>
+        </Card>
     );
 }
 

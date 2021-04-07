@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Row, Col, Card, Button } from 'react-bootstrap';
 
 export class MovieView extends React.Component {
     render() {
@@ -8,26 +9,30 @@ export class MovieView extends React.Component {
         if (!movie) return null;
 
         return (
-            <div className="movie-view">
-                <img className="movie-poster" src={movie.ImagePath} alt="Poster"/>
-                <div className="movie-title">
-                    <span className="label">Title: </span>
-                    <span className="value">{movie.Title}</span>
-                </div>
-                <div className="movie-description">
-                    <span className="label">Description: </span>
-                    <span className="value">{movie.Description}</span>
-                </div>
-                <div className="movie-genre">
-                    <span className="label">Genre: </span>
-                    <span className="value">{movie.Genre.Name}</span>
-                </div>
-                <div className="movie-director">
-                    <span className="label">Director: </span>
-                    <span className="value">{movie.Director.Name}</span>
-                </div>
-                <button onClick={() => onClick()}>Back</button>
-            </div>
+            <Card className='movie-view'>
+                <Card.Img
+                    variant='top'
+                    className="movie-poster"
+                    src={movie.ImagePath}
+                    alt="Poster"
+                />
+                <Card.Body>
+                    <Card.Title className="movie-title">{movie.Title}</Card.Title>
+                    <Card.Text className="movie-description">
+                        {movie.Description}
+
+                        <span className="label">Genre: </span>
+                        <span className="value">{movie.Genre.Name}</span>
+
+                        <span className="label">Director: </span>
+                        <span className="value">{movie.Director.Name}</span>
+                    </Card.Text>
+                    <Button
+                        variant='primary'
+                        onClick={() => onClick()}
+                    >Back</Button>
+                </Card.Body>
+            </Card>
         );
     }
 }
