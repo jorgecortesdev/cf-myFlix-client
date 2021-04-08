@@ -3,6 +3,8 @@ import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
 import { LoginView } from '../login-view/login-view';
 import { RegistrationView } from '../registration-view/registration-view';
 import { MovieCard } from '../movie-card/movie-card';
@@ -15,19 +17,24 @@ export class MainView extends React.Component {
 
         this.state = {
             movies: [],
-            selectedMovie: null,
             user: null
         };
 
     }
 
     componentDidMount() {
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJGYXZvcml0ZU1vdmllcyI6W10sIl9pZCI6IjYwNmE0ZjhiMDYyZTBhMDAxNTM4ODczYyIsIlVzZXJuYW1lIjoiaGVyb2t1IiwiUGFzc3dvcmQiOiIkMmIkMTAkYnI5d2RjdGhhN1EwWnoyemY5U1c3dUVZcWMxTGtnMk1NUy8vVGd2ZFBhc0s4MjRzTEhHRW0iLCJFbWFpbCI6Imhlcm9rdUBteWZsaXguY29tIiwiQmlydGhkYXkiOiIxOTU2LTAyLTE0VDAwOjAwOjAwLjAwMFoiLCJfX3YiOjAsImlhdCI6MTYxNzU3OTkyMSwiZXhwIjoxNjE4MTg0NzIxLCJzdWIiOiJoZXJva3UifQ.2SRCbqmcIFFK0bEYyhcbMBXUhyd5M10phiQFmSmbtIs';
+        let accessToken = localStorage.getItem('token');
+        if (accessToken !== null) {
+            this.setState({
+                user: localStorage.getItem('user')
+            });
+            this.getMovies(accessToken);
+        }
+    }
 
+    getMovies(token) {
         axios.get('https://x-movie-api.herokuapp.com/movies', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             })
             .then(response => {
                 this.setState({
@@ -37,24 +44,17 @@ export class MainView extends React.Component {
             .catch(error => {
                 console.log(error);
             });
+
     }
 
-    setSelectedMovie(newSelectedMovie) {
-        this.state({
-            selectedMovie: newSelectedMovie
-        });
-    }
-
-    onMovieClick(movie) {
+    onLoggedIn(authData) {
         this.setState({
-            selectedMovie: movie
+            user: authData.user.Username
         });
-    }
 
-    onLoggedIn(user) {
-        this.setState({
-            user
-        });
+        localStorage.setItem('token', authData.token);
+        localStorage.setItem('user', authData.user.Username);
+        this.getMovies(authData.token);
     }
 
     setInitialState() {
@@ -64,7 +64,7 @@ export class MainView extends React.Component {
     }
 
     render() {
-        const { movies, selectedMovie, user } = this.state;
+        const { movies, user } = this.state;
 
         if (!user) {
             return (
@@ -90,30 +90,29 @@ export class MainView extends React.Component {
         }
 
         return (
-            <>
-                {selectedMovie
-                ? (
-                    <Row className='justify-content-center'>
-                        <Col md={8}>
-                            <MovieView
-                                movie={selectedMovie}
-                                onClick={() => this.setInitialState()}
-                            />
-                        </Col>
-                    </Row>
-                ) :
-                <Row className='main-view row-cols-1 row-cols-md-3'>
-                    {movies.map(movie => (
-                        <Col className='mb-4' key={movie._id}>
-                            <MovieCard
-                                movie={movie}
-                                onClick={movie => this.onMovieClick(movie)}
-                            />
-                        </Col>
-                    ))}
-                </Row>
-                }
-            </>
+            <Router>
+                <Route exact path='/' render={() => {
+                    return (
+                        <Row className='main-view row-cols-1 row-cols-md-3'>
+                            {movies.map(movie => (
+                                <Col className='mb-4' key={movie._id}>
+                                    <MovieCard movie={movie} />
+                                </Col>
+                            ))}
+                        </Row>
+                    );
+                }} />
+
+                <Route exact path='/movies/:movieId' render={({match}) => {
+                    return (
+                        <Row className='justify-content-center'>
+                            <Col md={8}>
+                                <MovieView movie={movies.find(m => m._id === match.params.movieId)}/>
+                            </Col>
+                        </Row>
+                    );
+                }} />
+            </Router>
         );
     }
 }

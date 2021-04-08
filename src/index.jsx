@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { HeaderView } from './components/header-view/header-view';
+import { FooterView } from './components/footer-view/footer-view';
 import { MainView } from './components/main-view/main-view';
 import Container from 'react-bootstrap/Container';
 
@@ -11,9 +13,15 @@ import './index.scss';
 class MyFlixApplication extends React.Component {
   render() {
     return (
-      <Container className='py-5'>
-        <MainView />
-      </Container>
+      <>
+        <HeaderView />
+        <div className='py-5 bg-light'>
+          <Container>
+            <MainView />
+          </Container>
+        </div>
+        <FooterView />
+      </>
     );
   }
 }

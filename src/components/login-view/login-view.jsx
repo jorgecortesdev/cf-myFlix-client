@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Form, Card, Button } from 'react-bootstrap';
+import { Form, Card, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 export function LoginView(props) {
     const [ username, setUsername ] = useState('');
@@ -8,10 +9,18 @@ export function LoginView(props) {
 
     const handleSubmit = event => {
         event.preventDefault();
-        console.log(username, password);
         /* Send a request to the server for authentication */
-        /* then call props.onLoggedIn(username) */
-        props.onLoggedIn(username);
+        axios.post('https://x-movie-api.herokuapp.com/login', {
+            Username: username,
+            Password: password
+        })
+        .then(response => {
+            const data = response.data;
+            props.onLoggedIn(data);
+        })
+        .catch(event => {
+            console.log('no such user');
+        });
     };
 
     return (
@@ -22,21 +31,23 @@ export function LoginView(props) {
                         <h2>Login</h2>
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group controlId='formUsername'>
                         <Form.Label>Username:</Form.Label>
                         <Form.Control
                             type='text'
                             value={username}
                             onChange={event => setUsername(event.target.value)}
+                            placeholder='Enter username'
                         />
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group controlId='formPassword'>
                         <Form.Label>Password:</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
                             onChange={event => setPassword(event.target.value)}
+                            placeholder='Password'
                         />
                     </Form.Group>
 
@@ -49,7 +60,6 @@ export function LoginView(props) {
                         >Submit</Button>
                     </Form.Group>
                 </Form>
-
             </Card.Body>
         </Card>
     );
