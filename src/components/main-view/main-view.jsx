@@ -103,13 +103,7 @@ export class MainView extends React.Component {
 
                 {/* Movie details route */}
                 <Route exact path='/movies/:movieId' render={({match}) => {
-                    return (
-                        <Row className='justify-content-center'>
-                            <Col md={8}>
-                                <MovieView movie={movies.find(m => m._id === match.params.movieId)}/>
-                            </Col>
-                        </Row>
-                    );
+                    return <MovieView movie={movies.find(m => m._id === match.params.movieId)} />
                 }} />
 
                 {/* Gender details route */}
