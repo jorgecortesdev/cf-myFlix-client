@@ -11,13 +11,36 @@ import './index.scss';
 
 // Main component (will eventually use all the others)
 class MyFlixApplication extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      username: null
+    };
+  }
+
+  componentDidMount() {
+    let username = localStorage.getItem('user');
+    if (username !== null) {
+      this.setState({
+        username: localStorage.getItem('user')
+      });
+    }
+  }
+
+  onLoggedIn(username) {
+    this.setState({
+      username: username
+    })
+  }
+
   render() {
     return (
       <>
-        <HeaderView />
+        <HeaderView username={this.state.username} />
         <div className='py-5 bg-light'>
           <Container>
-            <MainView />
+            <MainView onLoggedIn={username => this.onLoggedIn(username)} />
           </Container>
         </div>
         <FooterView />

@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Button, Container } from 'react-bootstrap';
 
 import { LogoSvg } from '../logo-svg/logo-svg';
 
 export function HeaderView(props) {
+  const [username, setUsername] = useState('');
 
-  const onClick = () => {
+  useEffect(() => {
+    setUsername(props.username);
+  });
+
+  const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.open('/', '_self');
@@ -19,13 +24,19 @@ export function HeaderView(props) {
               <LogoSvg />
               <strong>myFlix</strong>
           </Navbar.Brand>
-          <nav className='my-2 my-md-0 mr-md-3'>
-            <Button
-              type='submit'
-              onClick={onClick}
-              className='text-light'
-            >Logout</Button>
-          </nav>
+          <div className='my-2 my-md-0 mr-md-3'>
+            {username && (
+              <ul className="navbar-nav mr-auto mt-2 mt-lg-0 flex-row">
+                <li className="nav-item ml-3">
+                  <a className="nav-link" href="#" onClick={handleLogout}>Logout</a>
+                </li>
+                <li className="nav-item ml-3"><span className="nav-link">|</span></li>
+                <li className="nav-item ml-3">
+                  <a className="nav-link" href="#">Welcome, {username}!</a>
+                </li>
+              </ul>
+            )}
+          </div>
         </Container>
       </Navbar>
     </header>
