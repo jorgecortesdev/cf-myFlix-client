@@ -21,14 +21,12 @@ export class MovieView extends React.Component {
 							<Card.Title as='h5'>{movie.Title}</Card.Title>
 							<hr />
 							<Card.Text>{movie.Description}</Card.Text>
-							<Card.Text>
-								<dl className='row'>
-									<dt className='col-md-2 text-nowrap'>Genre:</dt>
-									<dd className='col-md-10'><Link to={`/genres/${movie.Genre.Name}`}>{movie.Genre.Name}</Link></dd>
-									<dt className='col-md-2 text-nowrap'>Director:</dt>
-									<dd className='col-md-10'><Link to={`/directors/${movie.Director.Name}`}>{movie.Director.Name}</Link></dd>
-								</dl>
-							</Card.Text>
+							<dl className='row'>
+								<dt className='col-md-2 text-nowrap'>Genre:</dt>
+								<dd className='col-md-10'><Link to={`/genres/${movie.Genre.Name}`}>{movie.Genre.Name}</Link></dd>
+								<dt className='col-md-2 text-nowrap'>Director:</dt>
+								<dd className='col-md-10'><Link to={`/directors/${movie.Director.Name}`}>{movie.Director.Name}</Link></dd>
+							</dl>
 							<Link to={'/'}>
 								<Button variant='primary'>Back</Button>
 							</Link>

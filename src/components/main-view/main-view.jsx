@@ -117,7 +117,10 @@ export class MainView extends React.Component {
                 <Route exact path='/directors/:name' render={({match}) => {
                     if (movies.length === 0) return <div>Empty</div>;
                     return (
-                        <DirectorView director={movies.find(m => m.Director.Name === match.params.name).Director} />
+                        <DirectorView
+                            director={movies.find(m => m.Director.Name === match.params.name).Director}
+                            movies={movies.filter(m => m.Director.Name === match.params.name)}
+                        />
                     );
                 }} />
             </Router>

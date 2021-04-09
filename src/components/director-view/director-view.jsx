@@ -1,12 +1,12 @@
 import React from 'react';
-import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Card, Row, Col, ListGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './director-view.scss';
 
 export function DirectorView(props) {
-  const { director } = props;
+  const { director, movies } = props;
 
   return (
     <Card className='mb-3'>
@@ -21,6 +21,9 @@ export function DirectorView(props) {
             <small><strong>Death:</strong> { director.Death }</small>
             <hr />
             <Card.Text>{director.Bio}</Card.Text>
+            <ListGroup variant='flush' className='mb-md-3' as='ul'>
+              {movies.map(movie => (<ListGroup.Item key={movie._id} className='pl-0' as='li'><Link to={`/movies/${movie._id}`}>{movie.Title}</Link></ListGroup.Item>))}
+            </ListGroup>
             <Link to={'/'}>
               <Button variant='primary'>Back</Button>
             </Link>
