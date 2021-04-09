@@ -8,6 +8,7 @@ export function HeaderView(props) {
   const onClick = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    window.open('/', '_self');
   }
 
   return (

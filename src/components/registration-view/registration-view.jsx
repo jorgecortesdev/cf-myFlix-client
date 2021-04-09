@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Card, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 export function RegistrationView(props) {
     const [username, setUsername] = useState('');
@@ -7,9 +8,23 @@ export function RegistrationView(props) {
     const [email, setEmail] = useState('');
     const [birthday, setBirthday] = useState('');
 
-    const handleSubmit = event => {
+    const handleRegister = event => {
         event.preventDefault();
-        console.log(username, password, email, birthday);
+
+        axios.post('https://x-movie-api.herokuapp.com/users', {
+                Username: username,
+                Password: password,
+                Email: email,
+                Birthday: birthday
+            })
+            .then(response => {
+                const { data } = response;
+                console.log(data);
+                window.open('/', '_self');
+            })
+            .catch(error => {
+                console.log('error registering the user');
+            });
     };
 
     return (
@@ -45,7 +60,7 @@ export function RegistrationView(props) {
                         <Form.Control
                             type='email'
                             value={email}
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={event => setEmail(event.target.value)}
                             required
                         />
                     </Form.Group>
@@ -63,7 +78,7 @@ export function RegistrationView(props) {
                         <Button
                             variant='primary'
                             type='submit'
-                            onClick={handleSubmit}
+                            onClick={handleRegister}
                             block
                             size='lg'
                             >Create your account</Button>
