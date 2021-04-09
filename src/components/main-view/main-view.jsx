@@ -1,14 +1,16 @@
 import React from 'react';
 import axios from 'axios';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+
+import { Row, Col } from 'react-bootstrap';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import { LoginView } from '../login-view/login-view';
-import { RegistrationView } from '../registration-view/registration-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
+import { LoginView } from '../login-view/login-view';
+import { RegistrationView } from '../registration-view/registration-view';
+import { DirectorView } from '../director-view/director-view';
+import { GenreView } from '../genre-view/genre-view';
 
 export class MainView extends React.Component {
 
@@ -19,7 +21,20 @@ export class MainView extends React.Component {
             movies: [],
             user: null
         };
+    }
 
+    getMovies(token) {
+        axios.get('https://x-movie-api.herokuapp.com/movies', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+            this.setState({
+                movies: response.data
+            });
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 
     componentDidMount() {
@@ -32,21 +47,6 @@ export class MainView extends React.Component {
         }
     }
 
-    getMovies(token) {
-        axios.get('https://x-movie-api.herokuapp.com/movies', {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            .then(response => {
-                this.setState({
-                    movies: response.data
-                });
-            })
-            .catch(error => {
-                console.log(error);
-            });
-
-    }
-
     onLoggedIn(authData) {
         this.setState({
             user: authData.user.Username
@@ -55,12 +55,6 @@ export class MainView extends React.Component {
         localStorage.setItem('token', authData.token);
         localStorage.setItem('user', authData.user.Username);
         this.getMovies(authData.token);
-    }
-
-    setInitialState() {
-        this.setState({
-            selectedMovie: null
-        });
     }
 
     render() {
@@ -91,6 +85,7 @@ export class MainView extends React.Component {
 
         return (
             <Router>
+                {/* Home page */}
                 <Route exact path='/' render={() => {
                     return (
                         <Row className='main-view row-cols-1 row-cols-md-3'>
@@ -103,6 +98,7 @@ export class MainView extends React.Component {
                     );
                 }} />
 
+                {/* Movie details route */}
                 <Route exact path='/movies/:movieId' render={({match}) => {
                     return (
                         <Row className='justify-content-center'>
@@ -110,6 +106,21 @@ export class MainView extends React.Component {
                                 <MovieView movie={movies.find(m => m._id === match.params.movieId)}/>
                             </Col>
                         </Row>
+                    );
+                }} />
+
+                {/* Gender details route */}
+                <Route exact path='/genres/:name' render={({match}) => {
+                    return (
+                        <GenreView genre={movies.find(m => m.Genre.Name === match.params.name).Genre} />
+                    );
+                }} />
+
+                {/* Director details route */}
+                <Route exact path='/directors/:name' render={({match}) => {
+                    if (movies.length === 0) return <div>Empty</div>;
+                    return (
+                        <DirectorView director={movies.find(m => m.Director.Name === match.params.name).Director} />
                     );
                 }} />
             </Router>
