@@ -13,6 +13,7 @@ import { LoginView } from '../login-view/login-view';
 import { RegistrationView } from '../registration-view/registration-view';
 import { DirectorView } from '../director-view/director-view';
 import { GenreView } from '../genre-view/genre-view';
+import { UserProfileView} from '../user-profile-view/user-profile-view';
 
 export class MainView extends React.Component {
 
@@ -126,6 +127,13 @@ export class MainView extends React.Component {
                             director={movies.find(m => m.Director.Name === match.params.name).Director}
                             movies={movies.filter(m => m.Director.Name === match.params.name)}
                         />
+                    );
+                }} />
+
+                {/* User Profile */}
+                <Route exact path='/users/:name' render={({ match }) => {
+                    return (
+                        <UserProfileView username={match.params.name} movies={movies}/>
                     );
                 }} />
             </Router>

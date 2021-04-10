@@ -32,7 +32,7 @@ export function HeaderView(props) {
                 </li>
                 <li className="nav-item ml-3"><span className="nav-link">|</span></li>
                 <li className="nav-item ml-3">
-                  <a className="nav-link" href="#">Welcome, {username}!</a>
+                  <a className="nav-link" href={`/users/${username}`}>Welcome, {username}!</a>
                 </li>
               </ul>
             )}
