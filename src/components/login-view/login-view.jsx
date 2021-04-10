@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Card, Button } from 'react-bootstrap';
@@ -10,7 +12,7 @@ export function LoginView(props) {
     const handleSubmit = event => {
         event.preventDefault();
         /* Send a request to the server for authentication */
-        axios.post('https://x-movie-api.herokuapp.com/login', {
+        axios.post(`${process.env.API_URL}/login`, {
             Username: username,
             Password: password
         })

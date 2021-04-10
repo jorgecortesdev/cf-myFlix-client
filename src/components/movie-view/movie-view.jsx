@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Card, Button } from 'react-bootstrap';
@@ -21,7 +23,7 @@ export class MovieView extends React.Component {
 		let accessToken = localStorage.getItem('token');
 		let username = localStorage.getItem('user');
 		if (accessToken !== null) {
-			axios.get(`https://x-movie-api.herokuapp.com/users/${username}`, {
+			axios.get(`${process.env.API_URL}/users/${username}`, {
 					headers: { Authorization: `Bearer ${accessToken}` }
 				})
 				.then(response => {
@@ -46,7 +48,7 @@ export class MovieView extends React.Component {
 		let action = this.isFavorite(movieId) ? 'put' : 'post';
 		let accessToken = localStorage.getItem('token');
 
-		axios[action](`https://x-movie-api.herokuapp.com/users/${username}/movies/${movieId}`, {}, {
+		axios[action](`${process.env.API_URL}/users/${username}/movies/${movieId}`, {}, {
 				headers: { Authorization: `Bearer ${accessToken}` }
 			})
 			.then(response => {

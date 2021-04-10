@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import React, { useState } from 'react';
 import { Row, Col, Form, Card, Button } from 'react-bootstrap';
 import axios from 'axios';
@@ -11,7 +13,7 @@ export function RegistrationView(props) {
     const handleRegister = event => {
         event.preventDefault();
 
-        axios.post('https://x-movie-api.herokuapp.com/users', {
+        axios.post(`${process.env.API_URL}/users`, {
                 Username: username,
                 Password: password,
                 Email: email,

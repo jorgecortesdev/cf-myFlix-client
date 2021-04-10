@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import React from 'react';
 import axios from 'axios';
 
@@ -24,7 +26,7 @@ export class MainView extends React.Component {
     }
 
     getMovies(token) {
-        axios.get('https://x-movie-api.herokuapp.com/movies', {
+        axios.get(`${process.env.API_URL}/movies`, {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(response => {
