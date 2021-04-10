@@ -3,10 +3,67 @@ import PropTypes from 'prop-types';
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
 import { Link } from 'react-router-dom';
+import { BookmarkStart } from '../common/icons/BookmarkStart/bookmark-start';
+import { BookmarkStartFill } from '../common/icons/BookmarkStartFill/bookmark-start-fill';
+import axios from 'axios';
 
 export class MovieView extends React.Component {
+	constructor() {
+		super();
+
+		this.state = {
+			favoriteMovies: [],
+			username: null
+		};
+	}
+
+	componentDidMount() {
+		let accessToken = localStorage.getItem('token');
+		let username = localStorage.getItem('user');
+		if (accessToken !== null) {
+			axios.get(`https://x-movie-api.herokuapp.com/users/${username}`, {
+					headers: { Authorization: `Bearer ${accessToken}` }
+				})
+				.then(response => {
+					this.setState({
+						favoriteMovies: response.data.FavoriteMovies,
+						username: username
+					});
+				})
+				.catch(error => {
+					console.log(error);
+				});
+		}
+	}
+
+	isFavorite(id) {
+		return this.state.favoriteMovies.includes(id);
+	}
+
+	toggleFavorite(movieId, username) {
+		if (movieId === null || username === null) return;
+
+		let action = this.isFavorite(movieId) ? 'put' : 'post';
+		let accessToken = localStorage.getItem('token');
+
+		axios[action](`https://x-movie-api.herokuapp.com/users/${username}/movies/${movieId}`, {}, {
+				headers: { Authorization: `Bearer ${accessToken}` }
+			})
+			.then(response => {
+				let favoriteMovies = action === 'post'
+					? [...this.state.favoriteMovies, movieId]
+					: this.state.favoriteMovies.filter(i => i !== movieId);
+				this.setState({
+					favoriteMovies:  favoriteMovies
+				});
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	}
+
 	render() {
-		const { movie, onClick } = this.props;
+		const { movie } = this.props;
 
 		if (!movie) return null;
 
@@ -18,7 +75,10 @@ export class MovieView extends React.Component {
 					</Col>
 					<Col md={9}>
 						<Card.Body>
-							<Card.Title as='h5'>{movie.Title}</Card.Title>
+							<div className='d-flex align-items-center'>
+								<Card.Title className='flex-grow-1 m-0' as='h5'>{movie.Title}</Card.Title>
+								<a href="#" onClick={() => this.toggleFavorite(movie._id, this.state.username)}>{this.isFavorite(movie._id) ? <BookmarkStartFill/> : <BookmarkStart/>}</a>
+							</div>
 							<hr />
 							<Card.Text>{movie.Description}</Card.Text>
 							<dl className='row'>
