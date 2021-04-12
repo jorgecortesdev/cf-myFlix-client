@@ -2,7 +2,7 @@ require('dotenv').config();
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 import { Link } from 'react-router-dom';
 import { BookmarkStart } from '../common/icons/BookmarkStart/bookmark-start';
@@ -70,32 +70,34 @@ export class MovieView extends React.Component {
 		if (!movie) return null;
 
 		return (
-			<Card className='mb-3'>
-				<Row className='no-gutters'>
-					<Col md={3} className='d-flex d-md-block justify-content-center mt-4 mt-md-0'>
-						<img className='img-fluid' src={movie.ImagePath} alt="Movie Poster" />
-					</Col>
-					<Col md={9}>
-						<Card.Body>
-							<div className='d-flex align-items-center'>
-								<Card.Title className='flex-grow-1 m-0' as='h5'>{movie.Title}</Card.Title>
-								<a href="#" onClick={() => this.toggleFavorite(movie._id, this.state.username)}>{this.isFavorite(movie._id) ? <BookmarkStartFill/> : <BookmarkStart/>}</a>
-							</div>
-							<hr />
-							<Card.Text>{movie.Description}</Card.Text>
-							<dl className='row'>
-								<dt className='col-md-2 text-nowrap'>Genre:</dt>
-								<dd className='col-md-10'><Link to={`/genres/${movie.Genre.Name}`}>{movie.Genre.Name}</Link></dd>
-								<dt className='col-md-2 text-nowrap'>Director:</dt>
-								<dd className='col-md-10'><Link to={`/directors/${movie.Director.Name}`}>{movie.Director.Name}</Link></dd>
-							</dl>
-							<Link to={'/'}>
-								<Button variant='primary'>Back</Button>
-							</Link>
-						</Card.Body>
-					</Col>
-				</Row>
-			</Card>
+			<Container>
+				<Card className='mb-3'>
+					<Row className='no-gutters'>
+						<Col md={3} className='d-flex d-md-block justify-content-center mt-4 mt-md-0'>
+							<img className='img-fluid' src={movie.ImagePath} alt="Movie Poster" />
+						</Col>
+						<Col md={9}>
+							<Card.Body>
+								<div className='d-flex align-items-center'>
+									<Card.Title className='flex-grow-1 m-0' as='h5'>{movie.Title}</Card.Title>
+									<a href="#" onClick={() => this.toggleFavorite(movie._id, this.state.username)}>{this.isFavorite(movie._id) ? <BookmarkStartFill/> : <BookmarkStart/>}</a>
+								</div>
+								<hr />
+								<Card.Text>{movie.Description}</Card.Text>
+								<dl className='row'>
+									<dt className='col-md-2 text-nowrap'>Genre:</dt>
+									<dd className='col-md-10'><Link to={`/genres/${movie.Genre.Name}`}>{movie.Genre.Name}</Link></dd>
+									<dt className='col-md-2 text-nowrap'>Director:</dt>
+									<dd className='col-md-10'><Link to={`/directors/${movie.Director.Name}`}>{movie.Director.Name}</Link></dd>
+								</dl>
+								<Link to={'/'}>
+									<Button variant='primary'>Back</Button>
+								</Link>
+							</Card.Body>
+						</Col>
+					</Row>
+				</Card>
+			</Container>
 		);
 	}
 }
