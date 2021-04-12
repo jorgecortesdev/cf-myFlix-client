@@ -45,7 +45,7 @@ export class MovieView extends React.Component {
 	toggleFavorite(movieId, username) {
 		if (movieId === null || username === null) return;
 
-		let action = this.isFavorite(movieId) ? 'put' : 'post';
+		let action = this.isFavorite(movieId) ? 'patch' : 'post';
 		let accessToken = localStorage.getItem('token');
 
 		axios[action](`${process.env.API_URL}/users/${username}/movies/${movieId}`, {}, {

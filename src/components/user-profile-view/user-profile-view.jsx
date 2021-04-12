@@ -1,12 +1,12 @@
 require('dotenv').config();
 
 import React, { useEffect } from 'react';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import { Card, Row, Col, ListGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-
+import { Settings as SettingsIcon } from '../common/icons/Settings/settings'
 import './user-profile-view.scss';
-import axios from 'axios';
 
 export class UserProfileView extends React.Component {
   constructor() {
@@ -42,14 +42,19 @@ export class UserProfileView extends React.Component {
     }
 
     return (
-      <Card className='mb-3'>
+      <Card className='user-profile mb-3'>
         <Row className='no-gutters'>
           <Col md={4}>
             <img src="https://via.placeholder.com/300" alt="User Photo" />
           </Col>
           <Col md={8}>
             <Card.Body>
-              <Card.Title as='h5'>{this.state.user.Username}</Card.Title>
+              <div className='d-flex align-items-center user-profile__title'>
+                <Card.Title className='flex-grow-1 m-0' as='h5'>{this.state.user.Username}</Card.Title>
+                <Link to={`/users/${this.state.user.Username}/edit`}>
+                  <Button size='sm' variant='primary'><SettingsIcon/> Edit</Button>
+                </Link>
+              </div>
               <hr />
               <dl className='row'>
                 <dt className='col-md-2 text-nowrap'>Email:</dt>
