@@ -2,29 +2,30 @@ require('dotenv').config();
 
 import React from 'react';
 import axios from 'axios';
-
+import { connect } from 'react-redux';
+import { Route } from 'react-router-dom';
 import { Row, Col, Container } from 'react-bootstrap';
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { setMovies, setUser } from '../../actions/actions';
 
 import { MovieCard } from '../movie-card/movie-card';
-import { MovieView } from '../movie-view/movie-view';
 import { LoginView } from '../login-view/login-view';
 import { RegistrationView } from '../registration-view/registration-view';
-import { DirectorView } from '../director-view/director-view';
-import { GenreView } from '../genre-view/genre-view';
-import { UserProfileView } from '../user-profile-view/user-profile-view';
-import { UserProfileEdit } from '../user-profile-edit/user-profile-edit';
+import MovieView from '../movie-view/movie-view';
+import GenreView from '../genre-view/genre-view';
+import DirectorView from '../director-view/director-view';
+import UserProfileView from '../user-profile-view/user-profile-view';
+import UserProfileEdit from '../user-profile-edit/user-profile-edit';
 
 export class MainView extends React.Component {
 
-  constructor() {
-    super();
-
-    this.state = {
-    movies: [],
-    user: null
-    };
+  componentDidMount() {
+    let accessToken = localStorage.getItem('token');
+    if (accessToken !== null) {
+      let user = localStorage.getItem('user');
+      this.props.setUser(JSON.parse(user));
+      this.getMovies(accessToken);
+    }
   }
 
   getMovies(token) {
@@ -32,42 +33,26 @@ export class MainView extends React.Component {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(response => {
-      this.setState({
-        movies: response.data
-      });
+      this.props.setMovies(response.data);
     })
     .catch(error => {
       console.log(error);
     });
   }
 
-  componentDidMount() {
-    let accessToken = localStorage.getItem('token');
-    if (accessToken !== null) {
-      this.setState({
-        user: localStorage.getItem('user')
-      });
-      this.getMovies(accessToken);
-    }
-  }
-
   onLoggedIn(authData) {
-    this.setState({
-      user: authData.user.Username
-    });
-
-    this.props.onLoggedIn(authData.user.Username);
-
     localStorage.setItem('token', authData.token);
-    localStorage.setItem('user', authData.user.Username);
+    localStorage.setItem('user', JSON.stringify(authData.user))
+
+    this.props.setUser(authData.user);
 
     this.getMovies(authData.token);
   }
 
   render() {
-    const { movies, user } = this.state;
+    const { movies, user } = this.props;
 
-    if (!user) {
+    if (Object.keys(user).length === 0) {
       return (
         <Container>
           <Row>
@@ -93,7 +78,7 @@ export class MainView extends React.Component {
     }
 
     return (
-      <Router>
+      <>
         {/* Home page */}
         <Route exact path='/' render={() => {
           return (
@@ -117,34 +102,32 @@ export class MainView extends React.Component {
         {/* Gender details route */}
         <Route exact path='/genres/:name' render={({match}) => {
           return (
-            <GenreView
-              genre={movies.find(m => m.Genre.Name === match.params.name).Genre}
-              movies={movies.filter(m => m.Genre.Name === match.params.name)}
-            />
+            <GenreView genre={movies.find(m => m.Genre.Name === match.params.name).Genre}/>
           );
         }} />
 
         {/* Director details route */}
         <Route exact path='/directors/:name' render={({match}) => {
-          if (movies.length === 0) return <div>Empty</div>;
           return (
-            <DirectorView
-              director={movies.find(m => m.Director.Name === match.params.name).Director}
-              movies={movies.filter(m => m.Director.Name === match.params.name)}
-            />
+            <DirectorView director={movies.find(m => m.Director.Name === match.params.name).Director}/>
           );
         }} />
 
         {/* User Profile */}
-        <Route exact path='/users/:name' render={({ match }) => {
-          return <UserProfileView username={match.params.name} movies={movies}/>;
-        }} />
+        <Route exact path='/profile' component={UserProfileView}/>
 
         {/* User Profile Edit */}
-        <Route exact path='/users/:name/edit' render={({ match }) => {
-          return <UserProfileEdit username={match.params.name}/>;
-        }} />
-      </Router>
+        <Route exact path='/profile/edit' component={UserProfileEdit} />
+      </>
     );
   }
 }
+
+let mapStateToProps = state => {
+  return {
+    movies: state.movies,
+    user: state.user
+  }
+};
+
+export default connect(mapStateToProps, { setMovies, setUser })(MainView);

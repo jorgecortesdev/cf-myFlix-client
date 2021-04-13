@@ -1,8 +1,10 @@
 require('dotenv').config();
 
 import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux';
 import { Container, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
+import { setUser } from '../../actions/actions';
 
 export function UserProfileEdit(props) {
   const [username, setUsername] = useState('');
@@ -11,16 +13,9 @@ export function UserProfileEdit(props) {
   const [birthday, setBirthday] = useState('');
 
   useEffect(() => {
-    let accessToken = localStorage.getItem('token');
-
-    axios.get(`${process.env.API_URL}/users/${props.username}`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      })
-      .then(({data}) => {
-        setUsername(data.Username);
-        setEmail(data.Email);
-        setBirthday((new Date(data.Birthday)).toISOString().split('T')[0]);
-      });
+    setUsername(props.user.Username);
+    setEmail(props.user.Email);
+    setBirthday((new Date(props.user.Birthday)).toISOString().split('T')[0]);
   }, [])
 
   function handleSubmit(event) {
@@ -34,14 +29,22 @@ export function UserProfileEdit(props) {
     if (email != '') data.Email = email;
     if (birthday != '') data.Birthday = birthday;
 
-    axios.patch(`${process.env.API_URL}/users/${props.username}`, data, {
+    axios.patch(`${process.env.API_URL}/users/${props.user.Username}`, data, {
         headers: { Authorization: `Bearer ${accessToken}` }
       })
-      .then(({ data }) => {
-        setUsername(data.Username);
+      .then(response => {
+        setUsername(response.data.Username);
         setPassword('');
-        setEmail(data.Email);
-        setBirthday((new Date(data.Birthday)).toISOString().split('T')[0]);
+        setEmail(response.data.Email);
+        setBirthday((new Date(response.data.Birthday)).toISOString().split('T')[0]);
+        let newUser = {
+          ...props.user,
+          Username: response.data.Username,
+          Email: response.data.Email,
+          Birthday: response.data.Birthday
+        }
+        props.setUser(newUser);
+        localStorage.setItem('user', JSON.stringify(newUser));
         console.log('updated');
       });
   }
@@ -49,7 +52,7 @@ export function UserProfileEdit(props) {
   function deleteAccount(e) {
     let accessToken = localStorage.getItem('token');
 
-    axios.delete(`${process.env.API_URL}/users/${props.username}`, {
+    axios.delete(`${process.env.API_URL}/users/${props.user.Username}`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       })
       .then(({ data }) => {
@@ -91,3 +94,11 @@ export function UserProfileEdit(props) {
     </Container>
   )
 }
+
+let mapStateToProps = state => {
+  return {
+    user: state.user
+  }
+};
+
+export default connect(mapStateToProps, { setUser })(UserProfileEdit);

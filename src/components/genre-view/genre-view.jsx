@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Card, ListGroup, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -13,7 +14,10 @@ export function GenreView(props) {
           <Card.Title>{ genre.Name }</Card.Title>
           <Card.Text>{ genre.Description }</Card.Text>
           <ListGroup variant='flush' className='mb-md-3' as='ul'>
-            {movies.map(movie => (<ListGroup.Item key={movie._id} className='pl-0' as='li'><Link to={`/movies/${movie._id}`}>{movie.Title}</Link></ListGroup.Item>))}
+            {
+              movies.filter(m => m.Genre.Name === genre.Name)
+                .map(movie => (<ListGroup.Item key={movie._id} className='pl-0' as='li'><Link to={`/movies/${movie._id}`}>{movie.Title}</Link></ListGroup.Item>))
+            }
           </ListGroup>
           <Link to={'/'}>
             <Button variant='primary'>Back</Button>
@@ -30,3 +34,11 @@ GenreView.propTypes = {
     Name: PropTypes.string.isRequired
   }).isRequired
 };
+
+let mapStateToProps = state => {
+  return {
+    movies: state.movies
+  }
+};
+
+export default connect(mapStateToProps)(GenreView);

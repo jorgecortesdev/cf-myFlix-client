@@ -2,62 +2,40 @@ require('dotenv').config();
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { connect } from 'react-redux';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-
 import { Link } from 'react-router-dom';
+
+import { setUser } from '../../actions/actions';
+
 import { BookmarkStart } from '../common/icons/BookmarkStart/bookmark-start';
 import { BookmarkStartFill } from '../common/icons/BookmarkStartFill/bookmark-start-fill';
-import axios from 'axios';
 
 export class MovieView extends React.Component {
-	constructor() {
-		super();
-
-		this.state = {
-			favoriteMovies: [],
-			username: null
-		};
-	}
-
-	componentDidMount() {
-		let accessToken = localStorage.getItem('token');
-		let username = localStorage.getItem('user');
-		if (accessToken !== null) {
-			axios.get(`${process.env.API_URL}/users/${username}`, {
-					headers: { Authorization: `Bearer ${accessToken}` }
-				})
-				.then(response => {
-					this.setState({
-						favoriteMovies: response.data.FavoriteMovies,
-						username: username
-					});
-				})
-				.catch(error => {
-					console.log(error);
-				});
-		}
-	}
 
 	isFavorite(id) {
-		return this.state.favoriteMovies.includes(id);
+		let favoriteMovies = this.props.user.FavoriteMovies;
+		return favoriteMovies.includes(id);
 	}
 
-	toggleFavorite(movieId, username) {
-		if (movieId === null || username === null) return;
+	toggleFavorite(movieId) {
+		if (movieId === null) return;
 
+		let { user } = this.props;
 		let action = this.isFavorite(movieId) ? 'patch' : 'post';
 		let accessToken = localStorage.getItem('token');
 
-		axios[action](`${process.env.API_URL}/users/${username}/movies/${movieId}`, {}, {
+		axios[action](`${process.env.API_URL}/users/${user.Username}/movies/${movieId}`, {}, {
 				headers: { Authorization: `Bearer ${accessToken}` }
 			})
 			.then(response => {
 				let favoriteMovies = action === 'post'
-					? [...this.state.favoriteMovies, movieId]
-					: this.state.favoriteMovies.filter(i => i !== movieId);
-				this.setState({
-					favoriteMovies:  favoriteMovies
-				});
+					? [...user.FavoriteMovies, movieId]
+					: user.FavoriteMovies.filter(i => i !== movieId);
+				let newUser = { ...user, FavoriteMovies: favoriteMovies };
+				this.props.setUser(newUser);
+				localStorage.setItem('user', JSON.stringify(newUser));
 			})
 			.catch(error => {
 				console.log(error);
@@ -65,7 +43,7 @@ export class MovieView extends React.Component {
 	}
 
 	render() {
-		const { movie } = this.props;
+		const { movie, user } = this.props;
 
 		if (!movie) return null;
 
@@ -80,7 +58,7 @@ export class MovieView extends React.Component {
 							<Card.Body>
 								<div className='d-flex align-items-center'>
 									<Card.Title className='flex-grow-1 m-0' as='h5'>{movie.Title}</Card.Title>
-									<a href="#" onClick={() => this.toggleFavorite(movie._id, this.state.username)}>{this.isFavorite(movie._id) ? <BookmarkStartFill/> : <BookmarkStart/>}</a>
+									<a href="#" onClick={() => this.toggleFavorite(movie._id)}>{this.isFavorite(movie._id) ? <BookmarkStartFill/> : <BookmarkStart/>}</a>
 								</div>
 								<hr />
 								<Card.Text>{movie.Description}</Card.Text>
@@ -122,3 +100,11 @@ MovieView.propTypes = {
 		_id: PropTypes.string.isRequired
 	}).isRequired
 };
+
+let mapStateToProps = state => {
+	return {
+		user: state.user
+	}
+};
+
+export default connect(mapStateToProps, { setUser })(MovieView);

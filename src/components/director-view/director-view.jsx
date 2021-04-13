@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Card, Row, Col, ListGroup, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -23,7 +24,10 @@ export function DirectorView(props) {
               <hr />
               <Card.Text>{director.Bio}</Card.Text>
               <ListGroup variant='flush' className='mb-md-3' as='ul'>
-                {movies.map(movie => (<ListGroup.Item key={movie._id} className='pl-0' as='li'><Link to={`/movies/${movie._id}`}>{movie.Title}</Link></ListGroup.Item>))}
+                {
+                  movies.filter(m => m.Director.Name === director.Name)
+                    .map(movie => (<ListGroup.Item key={movie._id} className='pl-0' as='li'><Link to={`/movies/${movie._id}`}>{movie.Title}</Link></ListGroup.Item>))
+                }
               </ListGroup>
               <Link to={'/'}>
                 <Button variant='primary'>Back</Button>
@@ -44,3 +48,11 @@ DirectorView.propTypes = {
     Name: PropTypes.string.isRequired,
   }).isRequired
 };
+
+let mapStateToProps = state => {
+  return {
+    movies: state.movies
+  }
+};
+
+export default connect(mapStateToProps)(DirectorView);
